@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:weightSum="1"
+    android:background="@android:color/holo_blue_light">
+
+    <!--
+code for given instruction statement
+-->
+    <TextView
+        android:id="@+id/TitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="50pt"
+        android:text="GeOh" />
+
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:src="@drawable/mapimage" />
+
+    <TextView
+        android:id="@+id/functionsText"
+        android:layout_width="208dp"
+        android:layout_height="91dp"
+        android:layout_gravity="center"
+        android:text="While using the map, tap to add markers and descriptions, or tap on markers to view information" />
+
+
+
+    <TextView
+        android:id="@+id/instructionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Click the button below to access the map" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Access the Map" />
+
+
+</LinearLayout>
