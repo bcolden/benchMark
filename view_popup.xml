@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_light"
+    >
+
+    <ImageView
+        android:id="@+id/benchPicView"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/white" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/benchPicView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Benchmark Name:"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/benchNameView"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_alignLeft="@+id/benchDescriptionView"
+        android:layout_alignStart="@+id/benchDescriptionView"
+        android:layout_below="@+id/textView5"
+        android:background="@android:color/white"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_above="@+id/benchDescriptionView"
+        android:layout_centerHorizontal="true"
+        android:text="Benchmark Description:"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/benchDescriptionView"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_above="@+id/textView4"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
+        android:background="@android:color/white"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="220dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/upvoteButton"
+        android:layout_centerHorizontal="true"
+        android:text="Press the buttons below to upvote or downvote this benchmark"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/upvoteButton"
+        android:layout_width="190dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@android:color/white"
+        android:text="Upvote"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/downvoteButton"
+        android:layout_width="190dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/white"
+        android:text="Downvote"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/scoreBox"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:background="@android:color/white"
+        android:text="+5"
+        android:textColor="@android:color/black"
+        android:textSize="35dp" />
+
+
+
+
+</RelativeLayout>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_light"
+    >
+
+    <Button
+        android:id="@+id/cameraButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:text="Access the camera" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_alignLeft="@+id/cameraButton"
+        android:layout_alignStart="@+id/cameraButton"
+        android:layout_below="@+id/cameraButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="19dp"
+        android:text="Bench Name: "
+        android:textColor="@android:color/white"
+        android:textSize="15dp" />
+
+    <EditText
+        android:id="@+id/titleEdit"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:layout_width="130dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/titleEdit"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="11dp"
+        android:text="Bench Description: "
+        android:textColor="@android:color/white"
+        android:textSize="15dp"
+        android:id="@+id/textView2" />
+
+    <EditText
+        android:id="@+id/descriptionEdit"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_alignLeft="@+id/titleEdit"
+        android:layout_alignStart="@+id/titleEdit"
+        android:layout_below="@+id/textView2"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/descriptionEdit"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="11dp"
+        android:text="Press the buttons below to add tags to your bench:"
+        android:textColor="@android:color/white"
+        android:textSize="15dp" />
+
+    <Button
+        android:id="@+id/scenicButton"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/coveredButton"
+        android:layout_alignStart="@+id/coveredButton"
+        android:layout_below="@+id/textView3"
+        android:layout_gravity="center"
+        android:text="Scenic" />
+
+    <Button
+        android:id="@+id/shadyButton"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@+id/scenicButton"
+        android:layout_alignBottom="@+id/scenicButton"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/scenicButton"
+        android:layout_toRightOf="@+id/scenicButton"
+        android:text="Shady" />
+
+    <Button
+        android:id="@+id/coveredButton"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/scenicButton"
+        android:layout_gravity="center"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:text="Covered" />
+
+    <Button
+        android:id="@+id/workButton"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/shadyButton"
+        android:layout_gravity="center"
+        android:layout_toEndOf="@+id/coveredButton"
+        android:layout_toRightOf="@+id/coveredButton"
+        android:text="Good Work Station" />
+
+    <Button
+        android:id="@+id/createButton"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/workButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/workButton"
+        android:layout_gravity="right"
+        android:layout_marginBottom="25dp"
+        android:layout_weight="0"
+        android:text="Create"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@+id/createButton"
+        android:layout_alignBottom="@+id/createButton"
+        android:layout_gravity="left"
+        android:layout_toLeftOf="@+id/createButton"
+        android:layout_toStartOf="@+id/createButton"
+        android:layout_weight="0"
+        android:text="Cancel"
+        />
+
+
+
+
+</RelativeLayout>
