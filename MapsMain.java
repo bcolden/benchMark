@@ -1,13 +1,17 @@
+Almost working main 2
 package com.mylab_final.cisc181.finalproject;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -15,14 +19,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -37,11 +41,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import static com.mylab_final.cisc181.finalproject.R.color.wallet_holo_blue_light;
 
 public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         GoogleMap.OnMapLongClickListener,
@@ -72,16 +75,43 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
     private TextView instructionTextView;
     private TextView functionTextView;
 
+    //Initialization for create_popup
+    private Button cameraButton;
+    private EditText titleEdit;
+    private EditText descriptionEdit;
+    private Button scenicButton;
+    private Button shadyButton;
+    private Button coveredButton;
+    private Button workButton;
+    private Button createButton;
+    private Button cancelButton;
+
+    //Initialization for View Marker
+    private ImageView benchPicView;
+    private TextView benchNameView;
+    private TextView benchDescriptionView;
+    private Button upvoteButton;
+    private Button downvoteButton;
+    private TextView scoreBox;
+    private Button closeView;
+
+
     public static final String PREFS_NAME = "MyPrefsFile";
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     ImageView mImageView;
+    private int markerCounter = 0;
+    String tempImg = "";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_main);
+
+        editor = getApplicationContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
 
         mainImage = findViewById(R.id.imageView1); //accessing image
         button = findViewById(R.id.button);    //accessing button
@@ -89,8 +119,8 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         instructionTextView = findViewById(R.id.instructionText);
         functionTextView = findViewById(R.id.functionsText);
 
-        //For accessing map from main
         button.setOnClickListener((v) -> {
+            Intent intent = new Intent(this, DisplayMessageActivity.class);
             setContentView(R.layout.map_fragment);
 
             // Grab SupportMapFragment and async data call when it's ready
@@ -100,33 +130,16 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
 
         });
 
-
-        //Testing without accessing the map for emulation
-        /*
-        button.setOnClickListener((v) -> {
-            setContentView(R.layout.create_marker_popup);
-            button = findViewById(R.id.pictureButton);
-
-            button.setOnClickListener((cam) -> {
-                dispatchTakePictureIntent();
-            });
-
-
-        });
-        */
-
-        /*
-        For shared preferences!
-        https://stackoverflow.com/questions/5950043/how-to-use-getsharedpreferences-in-android
-         */
-
     }
 
+
+
     //mainly boilerplate code using tutorials online; this allows map to be shown.
-    @SuppressLint("ResourceType")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         myMap = googleMap;
+
+        //pull shared preferences HERE
 
         //Turn on My Location layer then get user location
         getLocationPermission();
@@ -136,14 +149,6 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         myMap.setOnMapLongClickListener(this);
         myMap.setOnMarkerClickListener(this);
         myMap.addMarker(new MarkerOptions().position(new LatLng(50, 50)).title("Marker in Sydney"));
-
-
-        //Sorting button on map screen, no function atm
-        button = findViewById(R.id.filterButton);
-        button.setOnClickListener((View filterButton) -> {
-            //dispatchTakePictureIntent();
-        });
-
     }
 
     //Creates AlertDialog box to prompt user
@@ -155,23 +160,13 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         //creates user input box #1, for title
         final EditText promptTitle = new EditText(this);
         promptTitle.setHint("Title");
+
         layout.addView(promptTitle);
 
         //creates user input box #2, for description
         final EditText promptDescription = new EditText(this);
         promptDescription.setHint("Description");
         layout.addView(promptDescription);
-
-
-        //Button on popup that opens camera
-        final Button pictureButton = new Button(this);
-        pictureButton.setHint("Upload a photo");
-        pictureButton.setOnClickListener((v) -> {
-            dispatchTakePictureIntent();
-        });
-        layout.addView(pictureButton);
-
-
         /* Will create user input  box #3 for hashtags, once this is figured out.
         final EditText promptHashtags = new EditText(this);
         promptHashtags.setHint("Tags");
@@ -182,8 +177,7 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         userPrompt = new AlertDialog.Builder(this);
         userPrompt.setView(layout);
         userPrompt.setTitle("Enter map information").setView(layout);
-
-
+        //defines event listener for "positive" button (OK, create, etc.)
         userPrompt.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 Log.i("AlertDialog", "Create button was hit");
@@ -191,7 +185,7 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
                 titleInput = promptTitle.getText().toString();
                 descInput = promptDescription.getText().toString();
                 LatLng currentCoords = tryMarker.getCoords();
-                putMarker = new MapItem(currentCoords, titleInput, descInput);
+                //putMarker = new MapItem(currentCoords, titleInput, descInput);
                 markerArray.add(putMarker);
                 populateMap();
             }
@@ -209,9 +203,7 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
 
     public void markerZoom(Marker marker, String title, String description) {
         LinearLayout layout = new LinearLayout(this);
-        LinearLayout layout2 = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout2.setOrientation(LinearLayout.HORIZONTAL);
 
         final TextView titleInfo = new TextView(this);
         titleInfo.setText(title);
@@ -235,30 +227,6 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         });
 
         Log.i("ATTENTION", "Neutral Button Works! Grab your attention!");
-
-        //Rough code for viewing bench picture in marker viewing popup
-        ImageView benchPic = new ImageView(this);
-        benchPic.setBackgroundResource(R.drawable.bench);
-        layout.addView(benchPic);
-
-
-        Button upButton = new Button(this);
-        upButton.setHint("Up Vote");
-        //upButton.setGravity(Gravity.LEFT);
-        upButton.setOnClickListener((upbut) -> {
-
-        });
-        layout.addView(upButton);
-
-
-        Button downButton = new Button(this);
-        downButton.setHint("Down Vote");
-        //downButton.setGravity(Gravity.RIGHT);
-        downButton.setOnClickListener((downbut) -> {
-
-        });
-        layout.addView(downButton);
-
         markerInfo.show();
     }
 
@@ -276,6 +244,7 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             mImageView = (ImageView) findViewById(R.id.sampleImg);
             mImageView.setImageBitmap(imageBitmap);
+            tempImg = encodeToBase64(imageBitmap);
         }
     }
 
@@ -284,8 +253,9 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
     public class MapItem {
         String title = "";
         String description = "";
-        ArrayList<String> hashtags = new ArrayList<>();
         LatLng coords;
+        String base64Img;
+        String additionalInfo;
 
         //constructor 1, temporary, ideally only use second constructor in the future
         public MapItem(LatLng coords) {
@@ -293,46 +263,64 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
         }
 
         //second constructor, after button issue can get worked out.
-        public MapItem(LatLng coords, String t, String d) {
-            this.title = t;
-            this.description = d;
-            //stringToHashtag(h);
-            this.coords = coords;
-        }
-
-        public void stringToHashtag(String h) {
-            Scanner scnr = new Scanner(h);
-            String delimiterPattern = "[\\s.!?,;:\\-()_\"]+";
-            scnr.useDelimiter(delimiterPattern);
-
-            while (scnr.hasNext()) {
-                String next = scnr.next().toLowerCase();
-                this.hashtags.add(next);
-            }
-
-        }
 
         public LatLng getCoords() {
             return this.coords;
+        }
+
+        public void setTitle(String t) {
+            this.title = t;
         }
 
         public String getTitle() {
             return this.title;
         }
 
+        public void setDescription(String d) {
+            this.description = d;
+        }
+
         public String getDescription() {
             return this.description;
         }
 
-        public void setTitle(String t) {
-            this.title = t;
+        public void setIsShady() {
+            this.additionalInfo = this.additionalInfo + "\n This bench is shady!";
         }
-        public void setDescription(String d) {
-            this.description = d;
+
+        public void setIsScenic() {
+            this.additionalInfo = this.additionalInfo + "\n This bench is scenic!";
         }
+
+        public void setIsCovered() {
+            this.additionalInfo = this.additionalInfo + " \n Safe from the elements";
+        }
+
+        public void setWorkBench() {
+            this.additionalInfo = this.additionalInfo + "\n Good place to do work";
+        }
+
+        public void setAdditionalInfo() {
+            this.description = this.description + this.additionalInfo;
+        }
+
+        public void setBase64Img(String s) {
+            this.base64Img = s;
+        }
+
+        public String getBase64Img() {
+            return this.base64Img;
+        }
+
     }
 
     public void populateMap() {
+        if (markerArray.size() == 0) {
+            int tempCounter = 0;
+            while (true) {
+
+            }
+        }
         for (MapItem g: markerArray) {
             myMap.addMarker(new MarkerOptions().position(g.coords));
         }
@@ -420,16 +408,138 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapClick(LatLng point) {
         //on click this creates new marker using MapItem's base constructor, to get coordinate data into the AlertDialog UI
-        tryMarker = new MapItem(point);
+        setContentView(R.layout.relative_create_popup);
+        createMarker(point);
         //calls user prompt method
-        promptUser();
+        //promptUser();
 
     }
+        /*
+    @Override
+    public void onDestroy() {
+
+        Fragment f = (Fragment) getFragmentManager().findFragmentById(R.id.map);
+        if (f != null) {
+            getFragmentManager().beginTransaction().remove(f).commit();
+        }
+
+        super.onDestroy();
+    }
+    */
+    public static String encodeToBase64(Bitmap image) {
+        Bitmap myImage = image;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        myImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
+
+        return imageEncoded;
+    }
+
+    public static Bitmap decodeBase64(String input) {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
+
+    public void createMarker(LatLng coords) {
+        String tempTitle;
+        String tempDescription;
+
+        MapItem tempMapItem = new MapItem(coords);
+
+
+        cameraButton = (Button) findViewById(R.id.cameraButton);
+        titleEdit = (EditText) findViewById(R.id.titleEdit);
+        descriptionEdit = (EditText) findViewById(R.id.descriptionEdit);
+        scenicButton = (Button) findViewById(R.id.scenicButton);
+        shadyButton = (Button) findViewById(R.id.shadyButton);
+        coveredButton = (Button) findViewById(R.id.coveredButton);
+        workButton = (Button) findViewById(R.id.workButton);
+        createButton = (Button) findViewById(R.id.createButton);
+        cancelButton = (Button) findViewById(R.id.cancelButton);
+
+
+        cameraButton.setOnClickListener((camera) -> {
+            dispatchTakePictureIntent();
+            tempMapItem.setBase64Img(tempImg);
+        });
+
+
+        tempMapItem.setTitle(titleEdit.getText().toString());
+        tempMapItem.setDescription(descriptionEdit.getText().toString());
+
+
+        scenicButton.setOnClickListener((scenic) -> {
+            tempMapItem.setIsScenic();
+            scenicButton.setBackgroundColor(Color.BLUE);
+        });
+
+        shadyButton.setOnClickListener((shady) -> {
+            tempMapItem.setIsShady();
+            shadyButton.setBackgroundColor(Color.BLUE);
+        });
+
+        coveredButton.setOnClickListener((covered) -> {
+            tempMapItem.setIsCovered();
+            coveredButton.setBackgroundColor(Color.BLUE);
+        });
+
+        workButton.setOnClickListener((work) -> {
+            tempMapItem.setWorkBench();
+            workButton.setBackgroundColor(Color.BLUE);
+        });
+
+        createButton.setOnClickListener((create) -> {
+            //tempMapItem.setAdditionalInfo();
+            //markerArray.add(tempMapItem);
+            //editor.putString("title"+markerCounter, tempMapItem.getTitle());
+            //editor.putString("description"+markerCounter, tempMapItem.getDescription());
+            //editor.putFloat("latitude"+markerCounter, (float) coords.latitude);
+            //editor.putFloat("longitude"+markerCounter, (float) coords.longitude);
+            //editor.putString("image"+markerCounter, tempMapItem.getBase64Img());
+            //populateMap();
+
+            setContentView(R.layout.map_fragment);
+
+            // Grab SupportMapFragment and async data call when it's ready
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        });
+
+        cancelButton.setOnClickListener((cancel) -> {
+            //setContentView, based on how it should work
+        });
+
+
+    }
+
+    public void viewMarker(MapItem g) {
+        benchPicView = (ImageView) findViewById(R.id.benchPicView);
+        benchNameView = (TextView) findViewById(R.id.benchNameView);
+        benchDescriptionView = (TextView) findViewById(R.id.benchDescriptionView);
+        //upvoteButton = (Button) findViewById(R.id.upvoteButton);
+        //downvoteButton = (Button) findViewById(R.id.downvoteButton);
+        //scoreBox = (TextView) findViewById(R.id.scoreBox);
+        closeView = (Button) findViewById(R.id.closeView);
+
+        benchPicView.setImageBitmap((decodeBase64(g.getBase64Img())));
+        benchNameView.setText(g.getTitle());
+        benchDescriptionView.setText(g.getDescription());
+
+        closeView.setOnClickListener((v) -> {
+            //return to Map
+        });
+
+    }
+
+
 
 
     @Override
     public void onMapLongClick(LatLng point) {
         //For testing; long click clears map, next marker input will re-populate fully!
+        createMarker(point);
         myMap.clear();
         dispatchTakePictureIntent();
     }
@@ -438,6 +548,8 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        MapItem clickedItem = markerArray.get(0);
+        setContentView(R.layout.view_popup);
         String tempTitle ="";
         String tempDescription = "";
         //current error: not able to distinguish coordinates between the two!!! Ask prof. Rasmussen?
@@ -448,12 +560,14 @@ public class MapsMain extends FragmentActivity implements OnMapReadyCallback,
             double long2 = marker.getPosition().longitude;
             double threshold = .0005;
             if ((Math.abs(lat1-lat2) < threshold) && (Math.abs(long1-long2) < threshold)) {
-                tempTitle = g.getTitle();
-                tempDescription = g.getDescription();
+                clickedItem = g;
+                break;
             }
         }
 
-        markerZoom(marker, tempTitle, tempDescription);
+        viewMarker(clickedItem);
+
+        //markerZoom(marker, tempTitle, tempDescription);
         return false;
     }
 }
